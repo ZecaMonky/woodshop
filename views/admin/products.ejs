@@ -30,7 +30,7 @@
                                 #<%= product.id %>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="h-16 w-16 object-cover rounded-lg">
+                                <img src="<%= product.image && product.image.startsWith('http') ? product.image : '/uploads/' + product.image %>" alt="<%= product.name %>" class="h-16 w-16 object-cover rounded-lg">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 <%= product.name %>

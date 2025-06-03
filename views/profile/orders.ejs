@@ -56,7 +56,7 @@
                                 <div class="space-y-4">
                                     <% order.items.forEach(item => { %>
                                         <div class="flex items-center gap-4">
-                                            <img src="/uploads/<%= item.product.image %>" alt="<%= item.product.name %>" class="w-16 h-16 object-cover rounded-lg">
+                                            <img src="<%= item.product.image && item.product.image.startsWith('http') ? item.product.image : '/uploads/' + item.product.image %>" alt="<%= item.product.name %>" class="w-16 h-16 object-cover rounded-lg">
                                             <div class="flex-1">
                                                 <h4 class="font-medium text-gray-900"><%= item.product.name %></h4>
                                                 <p class="text-sm text-gray-500"><%= item.quantity %> шт. × <%= item.price %> руб.</p>

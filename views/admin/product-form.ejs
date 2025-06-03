@@ -79,7 +79,7 @@
                     <% if (product && product.image) { %>
                         <div class="mt-2">
                             <p class="text-sm text-gray-500">Текущее изображение:</p>
-                            <img src="/uploads/<%= product.image %>" 
+                            <img src="<%= product.image && product.image.startsWith('http') ? product.image : '/uploads/' + product.image %>" 
                                  alt="<%= product.name %>" 
                                  class="mt-1 h-32 w-32 object-cover rounded-lg">
                         </div>
