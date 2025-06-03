@@ -1,0 +1,128 @@
+<%- include('partials/header', { title: 'Контакты' }) %>
+
+<div class="max-w-7xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Контакты</h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Свяжитесь с нами</h2>
+            
+            <form id="contactForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ваше имя</label>
+                    <input type="text" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                    <input type="tel" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Сообщение</label>
+                    <textarea name="message" rows="4" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                
+                <button type="submit" class="w-full bg-gray-900 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition">
+                    Отправить сообщение
+                </button>
+            </form>
+        </div>
+        
+        <div class="space-y-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Контактная информация</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-gray-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900">Адрес</h3>
+                            <p class="text-gray-600">г. Москва, ул. Примерная, д. 123</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-gray-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900">Телефон</h3>
+                            <p class="text-gray-600">+7 (999) 123-45-67</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-gray-600 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <div>
+                            <h3 class="font-medium text-gray-900">Email</h3>
+                            <p class="text-gray-600">info@example.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Режим работы</h2>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Понедельник - Пятница</span>
+                        <span class="text-gray-900 font-medium">9:00 - 18:00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Суббота</span>
+                        <span class="text-gray-900 font-medium">10:00 - 16:00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Воскресенье</span>
+                        <span class="text-gray-900 font-medium">Выходной</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        message: formData.get('message')
+    };
+    
+    try {
+        const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            showToast('Ожидайте ответа на почте в ближайшее время.','success');
+            e.target.reset();
+        } else {
+            throw new Error('Ошибка при отправке сообщения');
+        }
+    } catch (error) {
+        showToast('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте позже.','error');
+    }
+});
+</script>
+
+<%- include('partials/footer') %> 

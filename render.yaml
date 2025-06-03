@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: woodshop
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dqadgdsi3
+      - key: CLOUDINARY_API_KEY
+        value: 215913894322921
+      - key: CLOUDINARY_API_SECRET
+        value: ni80MF6QP4TiwHRAKyfR-XvyNxI
+      - key: DATABASE_URL
+        value: postgresql://woodshop_owner:npg_VHt54kpBUgMO@ep-green-field-a90psj3p-pooler.gwc.azure.neon.tech/woodshop?sslmode=require 

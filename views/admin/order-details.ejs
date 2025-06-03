@@ -1,0 +1,114 @@
+<%- include('../partials/header', { title: 'Детали заказа' }) %>
+<%- include('./partials/nav', { path: '/admin/orders' }) %>
+
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Заказ #<%= order.id %></h1>
+        <a href="/admin/orders" class="text-blue-600 hover:text-blue-900">
+            ← Назад к списку
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="p-6">
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Клиент</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= order.user_name %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Email</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= order.user_email %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Телефон</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= order.user_phone || '-' %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Дата</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= new Date(order.created_at).toLocaleString() %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Статус</h3>
+                    <select class="mt-1 text-lg rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            id="status-select" data-order-id="<%= order.id %>">
+                        <option value="new" <%= order.status === 'new' ? 'selected' : '' %>>Новый</option>
+                        <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>В обработке</option>
+                        <option value="completed" <%= order.status === 'completed' ? 'selected' : '' %>>Выполнен</option>
+                    </select>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Сумма заказа</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= order.total_price.toLocaleString() %> ₽</p>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Товары в заказе</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Товар</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Количество</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% order.items.forEach(item => { %>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <img src="<%= item.image_url %>" 
+                                                 alt="<%= item.name %>" 
+                                                 class="h-10 w-10 object-cover rounded-lg">
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900"><%= item.name %></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <%= item.price.toLocaleString() %> ₽
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <%= item.quantity %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <%= (item.price * item.quantity).toLocaleString() %> ₽
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('status-select').addEventListener('change', async (e) => {
+    const orderId = e.target.dataset.orderId;
+    const status = e.target.value;
+    
+    try {
+        const response = await fetch(`/admin/orders/${orderId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Ошибка при обновлении статуса');
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при обновлении статуса заказа');
+    }
+});
+</script>
+
+<%- include('../partials/footer') %> 

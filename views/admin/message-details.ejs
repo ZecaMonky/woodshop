@@ -1,0 +1,82 @@
+<%- include('../partials/header', { title: 'Детали сообщения' }) %>
+<%- include('./partials/nav', { path: '/admin/messages' }) %>
+
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Детали сообщения #<%= message.id %></h1>
+        <a href="/admin/messages" class="text-blue-600 hover:text-blue-900">
+            ← Назад к списку
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="p-6">
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Отправитель</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= message.name %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Email</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= message.email %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Телефон</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= message.phone || '-' %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Дата</h3>
+                    <p class="mt-1 text-lg text-gray-900"><%= new Date(message.created_at).toLocaleString() %></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Статус</h3>
+                    <select class="mt-1 text-lg rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            id="status-select" data-message-id="<%= message.id %>">
+                        <option value="new" <%= message.status === 'new' ? 'selected' : '' %>>Новое</option>
+                        <option value="processed" <%= message.status === 'processed' ? 'selected' : '' %>>Обработано</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-sm font-medium text-gray-500">Сообщение</h3>
+                <div class="mt-2 p-4 bg-gray-50 rounded-lg">
+                    <p class="text-gray-900 whitespace-pre-wrap"><%= message.message %></p>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-end">
+                <a href="https://mail.google.com/mail/?view=cm&to=<%= message.email %>" target="_blank"
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Ответить
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('status-select').addEventListener('change', async (e) => {
+    const messageId = e.target.dataset.messageId;
+    const status = e.target.value;
+    
+    try {
+        const response = await fetch(`/admin/messages/${messageId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Ошибка при обновлении статуса');
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при обновлении статуса сообщения');
+    }
+});
+</script>
+
+<%- include('../partials/footer') %> 

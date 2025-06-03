@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | WoodShop</title>
+    <link rel="icon" type="image/png" href="/images/ico.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between h-16 px-4">
+            <div class="flex items-center gap-2">
+                <img src="/images/ico.png" alt="WoodShop" class="h-7 w-7">
+                <span class="font-bold text-2xl tracking-tight">WoodShop</span>
+            </div>
+            <nav class="flex gap-6">
+                <a href="/" class="text-gray-800 hover:text-blue-600 transition">Главная</a>
+                <a href="/catalog" class="text-gray-800 hover:text-blue-600 transition">Каталог</a>
+                <a href="/calculator" class="text-gray-800 hover:text-blue-600 transition">Калькулятор</a>
+                <a href="/contacts" class="text-gray-800 hover:text-blue-600 transition">Контакты</a>
+                <% if (locals.user) { %>
+                    <a href="/profile" class="text-gray-800 hover:text-blue-600 transition">Личный кабинет</a>
+                <% } %>
+                <% if (locals.user && locals.user.isAdmin) { %>
+                    <a href="/admin" class="text-red-600 hover:text-red-800 font-semibold transition">Админ-панель</a>
+                <% } %>
+            </nav>
+            <div class="flex gap-4 items-center">
+                <% if (!locals.user) { %>
+                    <a href="/login" title="Войти" class="text-gray-700 hover:text-blue-600"><i class="fa-regular fa-user text-xl"></i></a>
+                <% } else { %>
+                    <a href="/logout" class="ml-2 px-4 py-2 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition">Выйти</a>
+                <% } %>
+                <a href="/cart" title="Корзина" class="text-gray-700 hover:text-blue-600"><i class="fa-solid fa-cart-shopping text-xl"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast уведомление -->
+    <div id="toast" class="fixed top-6 right-6 z-50 hidden min-w-[220px] max-w-xs bg-gray-900 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 transition-opacity duration-300">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 text-xl"></i>
+        <span id="toast-message" class="flex-1"></span>
+    </div>
+    <script>
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastMessage = document.getElementById('toast-message');
+        toastMessage.textContent = message;
+        if (type === 'success') {
+            toastIcon.className = 'fa-solid fa-circle-check text-green-400 text-xl';
+        } else if (type === 'error') {
+            toastIcon.className = 'fa-solid fa-circle-xmark text-red-400 text-xl';
+        } else {
+            toastIcon.className = 'fa-solid fa-circle-info text-blue-400 text-xl';
+        }
+        toast.classList.remove('hidden');
+        toast.style.opacity = '1';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 2500);
+    }
+    </script>
+</body>
+</html> 

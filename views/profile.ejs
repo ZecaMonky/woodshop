@@ -1,0 +1,163 @@
+<% var error = typeof error !== 'undefined' ? error : null; %>
+<% var newPassword = typeof newPassword !== 'undefined' ? newPassword : ''; %>
+<%- include('partials/header', { title: 'Профиль' }) %>
+
+<div class="max-w-7xl mx-auto py-10 px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <aside class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <i class="fa-solid fa-user text-4xl text-gray-400"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900"><%= user.name %></h2>
+                    <p class="text-gray-500"><%= user.email %></p>
+                </div>
+                <nav class="space-y-1">
+                    <a href="/profile" class="flex items-center gap-3 px-4 py-2 bg-gray-100 text-gray-900 rounded-lg">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Личные данные</span>
+                    </a>
+                    <a href="/profile/orders" class="flex items-center gap-3 px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        <i class="fa-solid fa-box"></i>
+                        <span>Мои заказы</span>
+                    </a>
+                    <a href="/profile/favorites" class="flex items-center gap-3 px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>Избранное</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <main class="lg:col-span-3">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Личные данные</h1>
+                <form action="/profile/update" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
+                        <input type="text" name="name" value="<%= user.name %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" name="email" value="<%= user.email %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                        <input type="tel" name="phone" value="<%= user.phone %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div id="password-hints" class="mb-4 text-sm text-gray-600 bg-gray-50 rounded-lg p-4 hidden">
+                        <div id="hint-length" class="flex items-center gap-2"><span>•</span> Минимум 8 символов</div>
+                        <div id="hint-lower" class="flex items-center gap-2"><span>•</span> Строчная буква</div>
+                        <div id="hint-upper" class="flex items-center gap-2"><span>•</span> Заглавная буква</div>
+                        <div id="hint-digit" class="flex items-center gap-2"><span>•</span> Цифра</div>
+                        <div id="hint-special" class="flex items-center gap-2"><span>•</span> Спецсимвол (!@#$%^&*()_+=- и др.)</div>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Изменить пароль</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Текущий пароль</label>
+                                <input type="password" name="currentPassword" value="<%= typeof currentPassword !== 'undefined' ? currentPassword : '' %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Новый пароль</label>
+                                <input type="password" name="newPassword" value="<%= typeof newPassword !== 'undefined' ? newPassword : '' %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-gray-900 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition">
+                            Сохранить изменения
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script>
+window.hasProfileError = <%= error ? 'true' : 'false' %>;
+
+if (window.location.search.includes('loginSuccess')) {
+    showToast('Вы успешно вошли!', 'success');
+    // Удаляем параметр из адресной строки, чтобы тост не повторялся
+    const url = new URL(window.location);
+    url.searchParams.delete('loginSuccess');
+    window.history.replaceState({}, document.title, url.pathname + url.search);
+}
+
+if (window.location.search.includes('profileUpdateSuccess')) {
+    showToast('Данные профиля успешно обновлены!', 'success');
+    // Удаляем параметр из адресной строки, чтобы тост не повторялся
+    const url = new URL(window.location);
+    url.searchParams.delete('profileUpdateSuccess');
+    window.history.replaceState({}, document.title, url.pathname + url.search);
+}
+
+const newPasswordInput = document.querySelector('input[name="newPassword"]');
+const hints = {
+    length: document.getElementById('hint-length'),
+    lower: document.getElementById('hint-lower'),
+    upper: document.getElementById('hint-upper'),
+    digit: document.getElementById('hint-digit'),
+    special: document.getElementById('hint-special')
+};
+const hintsBox = document.getElementById('password-hints');
+
+function validatePassword(pw) {
+    return {
+        length: pw.length >= 8,
+        lower: /[a-z]/.test(pw),
+        upper: /[A-Z]/.test(pw),
+        digit: /[0-9]/.test(pw),
+        special: /[!@#$%^&*()_+=\-]/.test(pw)
+    };
+}
+
+if (newPasswordInput) {
+    function updateHints() {
+        const pw = newPasswordInput.value;
+        const res = validatePassword(pw);
+        for (const key in hints) {
+            if (res[key]) {
+                hints[key].classList.add('text-green-600');
+                hints[key].classList.remove('text-gray-600');
+            } else {
+                hints[key].classList.remove('text-green-600');
+                hints[key].classList.add('text-gray-600');
+            }
+        }
+    }
+    if (window.hasProfileError) {
+        hintsBox.classList.remove('hidden');
+        newPasswordInput.focus();
+        updateHints();
+        newPasswordInput.addEventListener('blur', () => {
+            // Не скрываем подсказки при ошибке
+        });
+    } else {
+        newPasswordInput.addEventListener('blur', () => {
+            if (!newPasswordInput.value) hintsBox.classList.add('hidden');
+        });
+    }
+    newPasswordInput.addEventListener('focus', () => hintsBox.classList.remove('hidden'));
+    newPasswordInput.addEventListener('input', updateHints);
+    document.querySelector('form').addEventListener('submit', e => {
+        const pw = newPasswordInput.value;
+        if (pw) {
+            const res = validatePassword(pw);
+            if (!res.length || !res.lower || !res.upper || !res.digit || !res.special) {
+                showToast('Пароль не соответствует требованиям!', 'error');
+                e.preventDefault();
+            }
+        }
+    });
+}
+</script>
+<% if (error) { %>
+<script>showToast('<%= error %>', 'error');</script>
+<% } %> 

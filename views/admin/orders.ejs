@@ -1,0 +1,97 @@
+<%- include('../partials/header', { title: 'Управление заказами' }) %>
+<%- include('./partials/nav', { path: '/admin/orders' }) %>
+
+<div class="max-w-7xl mx-auto py-10 px-4">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Управление заказами</h1>
+    </div>
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Клиент</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Действия</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <% orders.forEach(order => { %>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                #<%= order.id %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <%= order.user_name %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <%= order.user_email %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <%= order.total_price.toLocaleString() %> ₽
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select class="status-select text-sm rounded-full px-3 py-1 font-medium
+                                    <%= order.status === 'new' ? 'bg-yellow-100 text-yellow-800' : 
+                                       order.status === 'processing' ? 'bg-blue-100 text-blue-800' : 
+                                       'bg-green-100 text-green-800' %>"
+                                    data-order-id="<%= order.id %>">
+                                    <option value="new" <%= order.status === 'new' ? 'selected' : '' %>>Новый</option>
+                                    <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>В обработке</option>
+                                    <option value="completed" <%= order.status === 'completed' ? 'selected' : '' %>>Выполнен</option>
+                                </select>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <%= new Date(order.created_at).toLocaleDateString() %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="/admin/orders/<%= order.id %>" class="text-blue-600 hover:text-blue-900">
+                                    Подробнее
+                                </a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.status-select').forEach(select => {
+    select.addEventListener('change', async (e) => {
+        const orderId = e.target.dataset.orderId;
+        const status = e.target.value;
+        try {
+            const response = await fetch(`/admin/orders/${orderId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status })
+            });
+            if (response.ok) {
+                // Обновляем стили селекта
+                e.target.className = `status-select text-sm rounded-full px-3 py-1 font-medium ${
+                    status === 'new' ? 'bg-yellow-100 text-yellow-800' : 
+                    status === 'processing' ? 'bg-blue-100 text-blue-800' : 
+                    'bg-green-100 text-green-800'
+                }`;
+                showToast('Статус заказа обновлён', 'success');
+            } else {
+                throw new Error('Ошибка при обновлении статуса');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showToast('Произошла ошибка при обновлении статуса заказа', 'error');
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %> 

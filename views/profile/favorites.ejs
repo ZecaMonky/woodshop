@@ -1,0 +1,109 @@
+<%- include('../partials/header', { title: 'Избранное' }) %>
+
+<div class="max-w-7xl mx-auto py-10 px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <aside class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <i class="fa-solid fa-user text-4xl text-gray-400"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900"><%= user.name %></h2>
+                    <p class="text-gray-500"><%= user.email %></p>
+                </div>
+                <nav class="space-y-1">
+                    <a href="/profile" class="flex items-center gap-3 px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Личные данные</span>
+                    </a>
+                    <a href="/profile/orders" class="flex items-center gap-3 px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        <i class="fa-solid fa-box"></i>
+                        <span>Мои заказы</span>
+                    </a>
+                    <a href="/profile/favorites" class="flex items-center gap-3 px-4 py-2 bg-gray-100 text-gray-900 rounded-lg">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>Избранное</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <main class="lg:col-span-3">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Избранное</h1>
+                
+                <% if (favorites && favorites.length > 0) { %>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <% favorites.forEach(product => { %>
+                            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                                <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="w-full h-48 object-cover rounded-lg mb-4">
+                                <h3 class="font-semibold text-gray-900 mb-2"><%= product.name %></h3>
+                                <p class="text-gray-500 text-sm mb-3"><%= product.description %></p>
+                                <div class="flex items-center justify-between">
+                                    <div class="text-xl font-bold text-gray-900"><%= product.price %> руб.</div>
+                                    <button class="toggle-favorite text-red-500 hover:text-red-700" data-product-id="<%= product.id %>">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </button>
+                                </div>
+                                <button class="add-to-cart w-full mt-4 py-2 border-2 border-gray-900 rounded-full text-gray-900 font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition" data-product-id="<%= product.id %>">
+                                    <i class="fa-solid fa-cart-plus"></i> В корзину
+                                </button>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-12">
+                        <i class="fa-solid fa-heart text-6xl text-gray-300 mb-4"></i>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">В избранном пока ничего нет</h2>
+                        <p class="text-gray-500 mb-6">Добавляйте товары в избранное, чтобы не потерять их</p>
+                        <a href="/catalog" class="inline-block bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition">
+                            Перейти в каталог
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.toggle-favorite').forEach(button => {
+    button.addEventListener('click', () => {
+        const productId = button.dataset.productId;
+        
+        fetch('/api/favorites/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
+});
+
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', () => {
+        const productId = button.dataset.productId;
+        
+        fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, quantity: 1 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Товар добавлен в корзину', 'success');
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
+});
+</script>
+
+<%- include('../partials/footer') %> 

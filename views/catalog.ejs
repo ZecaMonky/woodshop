@@ -1,0 +1,114 @@
+<%- include('partials/header', { title: 'Каталог' }) %>
+
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-8 py-10 px-4">
+    <aside class="w-full md:w-64 bg-white rounded-2xl shadow p-6 mb-4 md:mb-0">
+        <h3 class="font-semibold text-lg mb-4">Категории</h3>
+        <ul class="space-y-2">
+            <li>
+                <a href="/catalog" class="<%= !selectedCategory ? 'text-blue-600 font-bold' : 'text-gray-700 hover:text-blue-600' %> cursor-pointer">Вся древесина</a>
+            </li>
+            <% categories.forEach(category => { %>
+                <li>
+                    <a href="/catalog?category=<%= category.slug %>" class="<%= selectedCategory === category.slug ? 'text-blue-600 font-bold' : 'text-gray-700 hover:text-blue-600' %> cursor-pointer">
+                        <%= category.name %>
+                    </a>
+                </li>
+            <% }); %>
+        </ul>
+    </aside>
+    <section class="flex-1">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-4 gap-4">
+            <h2 class="text-2xl font-bold text-gray-900">Наши товары</h2>
+            <form id="sortForm" method="get" class="text-gray-500 text-sm flex items-center gap-2">
+                <% if (selectedCategory) { %>
+                    <input type="hidden" name="category" value="<%= selectedCategory %>">
+                <% } %>
+                <label for="sort" class="mr-2">Сортировать по:</label>
+                <select name="sort" id="sort" class="border border-gray-300 rounded px-2 py-1" onchange="this.form.submit()">
+                    <option value="" <%= !selectedSort ? 'selected' : '' %>>По умолчанию</option>
+                    <option value="price_asc" <%= selectedSort === 'price_asc' ? 'selected' : '' %>>Сначала дешёвые</option>
+                    <option value="price_desc" <%= selectedSort === 'price_desc' ? 'selected' : '' %>>Сначала дорогие</option>
+                    <option value="name_asc" <%= selectedSort === 'name_asc' ? 'selected' : '' %>>По названию (А-Я)</option>
+                    <option value="name_desc" <%= selectedSort === 'name_desc' ? 'selected' : '' %>>По названию (Я-А)</option>
+                </select>
+            </form>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+            <% products.forEach((product, index) => { %>
+                <div class="bg-white rounded-2xl shadow-lg flex flex-col justify-between items-center p-6 h-full">
+                    <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="w-full h-48 object-cover rounded-xl mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center"><%= product.name %></h3>
+                    <div class="text-gray-500 text-sm mb-3 text-center"><%= product.description %></div>
+                    <div class="text-xl font-bold text-gray-800 mb-2 text-center"><%= product.price %> руб.</div>
+                    <div class="min-h-[60px] flex flex-col items-center justify-end w-full mb-2">
+                        <span class="text-gray-500 text-xs mb-1">Кол-во:</span>
+                        <input type="number" min="1" value="1" class="w-20 px-2 py-1 border border-gray-300 rounded-lg text-center focus:outline-none focus:border-blue-500 transition" />
+                    </div>
+                    <div class="flex gap-2 w-full">
+                        <button class="add-to-cart flex-1 py-2 border-2 border-gray-900 rounded-full text-gray-900 font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition" data-product-id="<%= product.id %>">
+                            <i class="fa-solid fa-cart-plus"></i> В корзину
+                        </button>
+                        <button class="toggle-favorite p-2 border-2 border-gray-900 rounded-full text-gray-900 hover:bg-gray-900 hover:text-white transition" data-product-id="<%= product.id %>">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </section>
+</div>
+
+<script>
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', () => {
+        const productId = button.dataset.productId;
+        const quantityInput = button.parentElement.parentElement.querySelector('input[type="number"]');
+        const quantity = parseInt(quantityInput.value) || 1;
+        
+        fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, quantity })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Товар добавлен в корзину', 'success');
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
+});
+
+document.querySelectorAll('.toggle-favorite').forEach(button => {
+    button.addEventListener('click', () => {
+        const productId = button.dataset.productId;
+        
+        fetch('/api/favorites/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const icon = button.querySelector('i');
+                if (data.action === 'added') {
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid');
+                    icon.classList.add('text-red-500');
+                    showToast('Товар добавлен в избранное', 'success');
+                } else {
+                    icon.classList.remove('fa-solid');
+                    icon.classList.remove('text-red-500');
+                    icon.classList.add('fa-regular');
+                    showToast('Товар удалён из избранного', 'info');
+                }
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
+});
+</script>
+
+<%- include('partials/footer') %> 
