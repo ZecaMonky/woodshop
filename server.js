@@ -716,6 +716,56 @@ app.post('/api/orders/create', requireAuth, async (req, res) => {
     }
 });
 
+app.get('/admin/orders/:id', requireAdmin, async (req, res) => {
+    try {
+        const order = await Order.findByPk(req.params.id, {
+            include: [
+                { model: User },
+                {
+                    model: OrderItem,
+                    include: [Product]
+                }
+            ]
+        });
+        if (!order) return res.status(404).send('Заказ не найден');
+
+        // Преобразуем данные для шаблона
+        const items = (order.OrderItems || []).map(item => ({
+            name: item.Product ? item.Product.name : '',
+            image_url: item.Product && item.Product.image && item.Product.image.startsWith('http') ? item.Product.image : '/uploads/' + (item.Product ? item.Product.image : ''),
+            price: item.price,
+            quantity: item.quantity
+        }));
+
+        res.render('admin/order-details', {
+            order: {
+                id: order.id,
+                user_name: order.User ? order.User.name : '',
+                user_email: order.User ? order.User.email : '',
+                user_phone: order.User ? order.User.phone : '',
+                created_at: order.created_at,
+                status: order.status,
+                total_price: order.total_price,
+                items
+            }
+        });
+    } catch (error) {
+        console.error('Ошибка при получении заказа:', error);
+        res.status(500).send('Ошибка сервера');
+    }
+});
+
+app.get('/admin/messages/:id', requireAdmin, async (req, res) => {
+    try {
+        const message = await ContactMessage.findByPk(req.params.id);
+        if (!message) return res.status(404).send('Сообщение не найдено');
+        res.render('admin/message-details', { message });
+    } catch (error) {
+        console.error('Ошибка при получении сообщения:', error);
+        res.status(500).send('Ошибка сервера');
+    }
+});
+
 // Запуск сервера
 app.listen(port, () => {
     console.log(`Сервер запущен на порту ${port}`);
