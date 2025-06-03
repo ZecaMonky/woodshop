@@ -34,18 +34,18 @@
                 
                 <% if (favorites && favorites.length > 0) { %>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <% favorites.forEach(product => { %>
+                        <% favorites.forEach(item => { %>
                             <div class="bg-white border border-gray-200 rounded-xl p-4">
-                                <img src="<%= product.image && product.image.startsWith('http') ? product.image : '/uploads/' + product.image %>" alt="<%= product.name %>" class="w-full h-48 object-cover rounded-lg mb-4">
-                                <h3 class="font-semibold text-gray-900 mb-2"><%= product.name %></h3>
-                                <p class="text-gray-500 text-sm mb-3"><%= product.description %></p>
+                                <img src="<%= item.Product.image && item.Product.image.startsWith('http') ? item.Product.image : '/uploads/' + item.Product.image %>" alt="<%= item.Product.name %>" class="w-full h-48 object-cover rounded-lg mb-4">
+                                <h3 class="font-semibold text-gray-900 mb-2"><%= item.Product.name %></h3>
+                                <p class="text-gray-500 text-sm mb-3"><%= item.Product.description %></p>
                                 <div class="flex items-center justify-between">
-                                    <div class="text-xl font-bold text-gray-900"><%= product.price %> руб.</div>
-                                    <button class="toggle-favorite text-red-500 hover:text-red-700" data-product-id="<%= product.id %>">
+                                    <div class="text-xl font-bold text-gray-900"><%= item.Product.price %> руб.</div>
+                                    <button class="toggle-favorite text-red-500 hover:text-red-700" data-product-id="<%= item.Product.id %>">
                                         <i class="fa-solid fa-heart"></i>
                                     </button>
                                 </div>
-                                <button class="add-to-cart w-full mt-4 py-2 border-2 border-gray-900 rounded-full text-gray-900 font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition" data-product-id="<%= product.id %>">
+                                <button class="add-to-cart w-full mt-4 py-2 border-2 border-gray-900 rounded-full text-gray-900 font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition" data-product-id="<%= item.Product.id %>">
                                     <i class="fa-solid fa-cart-plus"></i> В корзину
                                 </button>
                             </div>
