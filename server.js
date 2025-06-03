@@ -610,6 +610,56 @@ app.post('/admin/categories/:id/delete', requireAdmin, async (req, res) => {
     }
 });
 
+app.post('/profile/update', requireAuth, async (req, res) => {
+    try {
+        const user = await User.findByPk(req.session.user.id);
+        if (!user) {
+            return res.status(404).send('Пользователь не найден');
+        }
+
+        // Обновление основных данных
+        user.name = req.body.name || user.name;
+        user.email = req.body.email || user.email;
+        user.phone = req.body.phone || user.phone;
+
+        // Если пользователь хочет сменить пароль
+        if (req.body.newPassword) {
+            // Проверяем текущий пароль
+            const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+            if (!isMatch) {
+                return res.render('profile', { user, error: 'Текущий пароль неверный' });
+            }
+            // Хешируем новый пароль
+            user.password = await bcrypt.hash(req.body.newPassword, 10);
+        }
+
+        await user.save();
+
+        // Обновляем данные в сессии
+        req.session.user.name = user.name;
+        req.session.user.email = user.email;
+
+        res.redirect('/profile?profileUpdateSuccess=true');
+    } catch (error) {
+        console.error('Ошибка при обновлении профиля:', error);
+        res.render('profile', { user: req.session.user, error: 'Ошибка сервера' });
+    }
+});
+
+// Форма создания товара
+app.get('/admin/products/new', requireAdmin, async (req, res) => {
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    res.render('admin/product-form', { product: null, categories });
+});
+
+// Форма редактирования товара
+app.get('/admin/products/:id/edit', requireAdmin, async (req, res) => {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).send('Товар не найден');
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    res.render('admin/product-form', { product, categories });
+});
+
 // Запуск сервера
 app.listen(port, () => {
     console.log(`Сервер запущен на порту ${port}`);
