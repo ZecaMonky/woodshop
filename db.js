@@ -171,6 +171,12 @@ Product.belongsToMany(User, { through: Favorite });
 User.belongsToMany(Product, { through: Cart });
 Product.belongsToMany(User, { through: Cart });
 
+// Корректная связь для include: [Product] в Cart
+Cart.belongsTo(Product);
+
+// Корректная связь для include: [Product] в Favorite
+Favorite.belongsTo(Product);
+
 module.exports = {
     sequelize,
     User,
