@@ -12,6 +12,9 @@ const { Pool } = require('pg');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Для корректной работы secure cookie за прокси (Render)
+app.set('trust proxy', 1);
+
 // Создаем пул соединений для сессий
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -383,8 +386,9 @@ app.post('/login', async (req, res) => {
             email: user.email,
             isAdmin: user.isAdmin
         };
-
-        res.redirect('/?loginSuccess=true');
+        req.session.save(() => {
+            res.redirect('/?loginSuccess=true');
+        });
     } catch (error) {
         console.error('Ошибка при входе:', error);
         res.render('login', { error: 'Ошибка сервера' });
