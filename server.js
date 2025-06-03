@@ -693,7 +693,8 @@ app.post('/api/orders/create', requireAuth, async (req, res) => {
         const order = await Order.create({
             UserId: user.id,
             total_price: totalPrice,
-            status: 'new'
+            status: 'new',
+            phone: user.phone
         });
 
         // Добавляем товары в заказ

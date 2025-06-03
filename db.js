@@ -87,6 +87,9 @@ const Order = sequelize.define('Order', {
     status: {
         type: DataTypes.STRING,
         defaultValue: 'new'
+    },
+    phone: {
+        type: DataTypes.STRING
     }
 }, {
     timestamps: true,
