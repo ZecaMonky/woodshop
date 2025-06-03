@@ -520,9 +520,20 @@ app.post('/admin/products', requireAdmin, upload.single('image'), async (req, re
         const { name, description, price, category_id } = req.body;
         let imageUrl = null;
 
+        console.log('Cloudinary config:', process.env.CLOUDINARY_CLOUD_NAME, process.env.CLOUDINARY_API_KEY);
+        console.log('req.file:', req.file);
+
         if (req.file) {
-            const result = await uploadToCloudinary(req.file);
-            imageUrl = result.secure_url;
+            try {
+                const result = await uploadToCloudinary(req.file);
+                console.log('Cloudinary upload result:', result);
+                imageUrl = result.secure_url;
+            } catch (cloudErr) {
+                console.error('Ошибка загрузки в Cloudinary:', cloudErr);
+                return res.status(500).send('Ошибка загрузки изображения');
+            }
+        } else {
+            console.warn('Файл не передан!');
         }
 
         await Product.create({
@@ -532,7 +543,7 @@ app.post('/admin/products', requireAdmin, upload.single('image'), async (req, re
             CategoryId: category_id,
             image: imageUrl
         });
-
+        
         res.redirect('/admin/products');
     } catch (error) {
         console.error('Ошибка при создании товара:', error);
