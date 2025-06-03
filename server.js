@@ -671,6 +671,51 @@ app.get('/admin/products/:id/edit', requireAdmin, async (req, res) => {
     res.render('admin/product-form', { product, categories });
 });
 
+app.post('/api/orders/create', requireAuth, async (req, res) => {
+    try {
+        // Получаем пользователя
+        const user = await User.findByPk(req.session.user.id);
+
+        // Получаем все товары из корзины пользователя
+        const cartItems = await Cart.findAll({
+            where: { UserId: user.id },
+            include: [Product]
+        });
+
+        if (!cartItems.length) {
+            return res.status(400).send('Корзина пуста');
+        }
+
+        // Считаем итоговую сумму
+        const totalPrice = cartItems.reduce((sum, item) => sum + item.quantity * parseFloat(item.Product.price), 0);
+
+        // Создаём заказ
+        const order = await Order.create({
+            UserId: user.id,
+            total_price: totalPrice,
+            status: 'new'
+        });
+
+        // Добавляем товары в заказ
+        for (const item of cartItems) {
+            await OrderItem.create({
+                OrderId: order.id,
+                ProductId: item.Product.id,
+                quantity: item.quantity,
+                price: item.Product.price
+            });
+        }
+
+        // Очищаем корзину
+        await Cart.destroy({ where: { UserId: user.id } });
+
+        res.redirect('/profile/orders');
+    } catch (error) {
+        console.error('Ошибка при оформлении заказа:', error);
+        res.status(500).send('Ошибка сервера');
+    }
+});
+
 // Запуск сервера
 app.listen(port, () => {
     console.log(`Сервер запущен на порту ${port}`);
