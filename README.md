@@ -67,20 +67,8 @@ ContactMessage: id, name, email, phone, message, status, created_at
 ER-диаграмма (текстовая)
 ------------------------
 
-+---------+        +-----------+        +-----------+
-|  User   |<------>|  Order    |<------>| OrderItem |
-+---------+        +-----------+        +-----------+
-     |                  ^                    ^
-     |                  |                    |
-     v                  |                    |
-+---------+        +-----------+        +-----------+
-| Favorite|<------>|  Product  |<------>|   Cart    |
-+---------+        +-----------+        +-----------+
-                        |
-                        v
-                  +-----------+
-                  | Category  |
-                  +-----------+
+![image](https://github.com/user-attachments/assets/ec83dc01-0c5b-4f90-8a81-22b78b7bc48b)
+
 
 - User 1:M Order
 - User 1:M Favorite (через Product)
