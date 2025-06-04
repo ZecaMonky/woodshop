@@ -27,10 +27,10 @@
                                 #<%= order.id %>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <%= order.user_name %>
+                                <%= order.User ? order.User.name : '-' %>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <%= order.user_email %>
+                                <%= order.User ? order.User.email : '-' %>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 <%= order.total_price.toLocaleString() %> ₽

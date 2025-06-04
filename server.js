@@ -694,7 +694,7 @@ app.post('/api/orders/create', requireAuth, async (req, res) => {
             UserId: user.id,
             total_price: totalPrice,
             status: 'new',
-            phone: user.phone
+            phone: req.body.phone
         });
 
         // Добавляем товары в заказ
@@ -744,6 +744,7 @@ app.get('/admin/orders/:id', requireAdmin, async (req, res) => {
                 user_name: order.User ? order.User.name : '',
                 user_email: order.User ? order.User.email : '',
                 user_phone: order.User ? order.User.phone : '',
+                phone: order.phone || '',
                 created_at: order.created_at,
                 status: order.status,
                 total_price: order.total_price,
