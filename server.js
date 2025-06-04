@@ -313,6 +313,10 @@ app.post('/api/cart/update', requireAuth, async (req, res) => {
 app.post('/api/cart/remove', requireAuth, async (req, res) => {
     try {
         const { itemId } = req.body;
+        if (!itemId) {
+            console.error('Ошибка: itemId не передан при удалении из корзины', req.body);
+            return res.status(400).json({ success: false, error: 'Некорректный id' });
+        }
         await Cart.destroy({
             where: {
                 id: itemId,
