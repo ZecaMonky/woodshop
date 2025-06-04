@@ -127,6 +127,7 @@ app.get('/cart', requireAuth, async (req, res) => {
             where: { UserId: req.session.user.id },
             include: [Product]
         });
+        console.log('cartItems:', cartItems.map(i => i.toJSON ? i.toJSON() : i));
         
         const formattedCart = {
             items: cartItems.map(item => ({
