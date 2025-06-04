@@ -40,7 +40,10 @@
                             <a href="/admin/products/<%= product.id %>/edit" class="text-blue-600 hover:text-blue-900 mr-4">
                                 Редактировать
                             </a>
-                            <button onclick="deleteProduct(<%= product.id %>)" class="text-red-600 hover:text-red-900">
+                            <button onclick="toggleProductActive(<%= product.id %>, <%= product.isActive %>)" class="mr-4 <%= product.isActive ? 'text-green-600 hover:text-green-900' : 'text-gray-400' %>">
+                                <%= product.isActive ? 'В наличии' : 'Нет в наличии' %>
+                            </button>
+                            <button onclick="showDeleteProductModal(<%= product.id %>, '<%= product.name.replace(/'/g, '\\'') %>')" class="text-red-600 hover:text-red-900">
                                 Удалить
                             </button>
                         </td>
@@ -51,28 +54,64 @@
     </div>
 </div>
 
+<!-- Модальное окно подтверждения удаления -->
+<div id="deleteProductModal" class="fixed inset-0 bg-black/40 z-50 hidden">
+    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+            <h2 class="text-xl font-bold mb-4 text-gray-900">Удалить товар</h2>
+            <p class="mb-4 text-gray-700">Вы уверены, что хотите удалить товар <span id="deleteProductName" class="font-semibold"></span>?<br> <span class="text-red-600 font-semibold">Это действие удалит все связанные записи из корзин и избранного!</span></p>
+            <div class="flex justify-end gap-4">
+                <button onclick="hideDeleteProductModal()" class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300">Отмена</button>
+                <button id="confirmDeleteProductBtn" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-async function deleteProduct(id) {
-    if (!confirm('Вы уверены, что хотите удалить этот товар?')) {
-        return;
-    }
+async function toggleProductActive(id, current) {
     try {
-        const response = await fetch(`/admin/products/${id}/delete`, {
-            method: 'POST'
+        const response = await fetch(`/admin/products/${id}/toggle-active`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isActive: !current })
         });
         if (response.ok) {
+            showToast('Статус товара обновлён', 'success');
+            setTimeout(() => window.location.reload(), 700);
+        } else {
+            throw new Error('Ошибка при обновлении статуса');
+        }
+    } catch (error) {
+        showToast('Ошибка при обновлении статуса', 'error');
+    }
+}
+
+let deleteProductId = null;
+function showDeleteProductModal(id, name) {
+    deleteProductId = id;
+    document.getElementById('deleteProductName').textContent = name;
+    document.getElementById('deleteProductModal').classList.remove('hidden');
+}
+function hideDeleteProductModal() {
+    deleteProductId = null;
+    document.getElementById('deleteProductModal').classList.add('hidden');
+}
+document.getElementById('confirmDeleteProductBtn').onclick = async function() {
+    if (!deleteProductId) return;
+    try {
+        const response = await fetch(`/admin/products/${deleteProductId}/delete`, { method: 'POST' });
+        if (response.ok) {
             showToast('Товар удалён', 'success');
-            // Удаляем строку из таблицы
-            const row = document.querySelector(`button[onclick="deleteProduct(${id})"]`).closest('tr');
-            if (row) row.remove();
+            setTimeout(() => window.location.reload(), 700);
         } else {
             throw new Error('Ошибка при удалении товара');
         }
     } catch (error) {
-        console.error('Ошибка:', error);
         showToast('Произошла ошибка при удалении товара', 'error');
     }
-}
+    hideDeleteProductModal();
+};
 </script>
 
 <%- include('../partials/footer') %> 

@@ -97,7 +97,8 @@ app.get('/catalog', async (req, res) => {
                 products = await Product.findAll({
                     where: { CategoryId: category.id },
                     order,
-                    include: [Category]
+                    include: [Category],
+                    attributes: { include: ['isActive'] }
                 });
             } else {
                 products = [];
@@ -105,7 +106,8 @@ app.get('/catalog', async (req, res) => {
         } else {
             products = await Product.findAll({
                 order,
-                include: [Category]
+                include: [Category],
+                attributes: { include: ['isActive'] }
             });
         }
         
@@ -125,7 +127,7 @@ app.get('/cart', requireAuth, async (req, res) => {
     try {
         const cartItems = await Cart.findAll({
             where: { UserId: req.session.user.id },
-            include: [Product]
+            include: [{ model: Product, attributes: { include: ['isActive'] } }]
         });
         
         const formattedCart = {
@@ -137,7 +139,8 @@ app.get('/cart', requireAuth, async (req, res) => {
                     name: item.Product.name,
                     description: item.Product.description,
                     price: item.Product.price,
-                    image: item.Product.image
+                    image: item.Product.image,
+                    isActive: item.Product.isActive
                 }
             }))
         };
@@ -198,7 +201,7 @@ app.get('/profile/favorites', requireAuth, async (req, res) => {
     try {
         const favorites = await Favorite.findAll({
             where: { UserId: req.session.user.id },
-            include: [Product],
+            include: [{ model: Product, attributes: { include: ['isActive'] } }],
             order: [['created_at', 'DESC']]
         });
         
@@ -522,36 +525,26 @@ app.post('/admin/messages/:id/status', requireAdmin, async (req, res) => {
 
 app.post('/admin/products', requireAdmin, upload.single('image'), async (req, res) => {
     try {
-        const { name, description, price, category_id } = req.body;
+        const { name, description, price, category_id, isActive } = req.body;
         let imageUrl = null;
-
-        console.log('Cloudinary config:', process.env.CLOUDINARY_CLOUD_NAME, process.env.CLOUDINARY_API_KEY);
-        console.log('req.file:', req.file);
-
         if (req.file) {
             try {
                 const result = await uploadToCloudinary(req.file);
-                console.log('Cloudinary upload result:', result);
                 imageUrl = result.secure_url;
             } catch (cloudErr) {
-                console.error('Ошибка загрузки в Cloudinary:', cloudErr);
                 return res.status(500).send('Ошибка загрузки изображения');
             }
-        } else {
-            console.warn('Файл не передан!');
         }
-
         await Product.create({
             name,
             description,
             price,
             CategoryId: category_id,
-            image: imageUrl
+            image: imageUrl,
+            isActive: isActive !== undefined ? isActive === 'true' : true
         });
-        
         res.redirect('/admin/products');
     } catch (error) {
-        console.error('Ошибка при создании товара:', error);
         res.status(500).send('Ошибка сервера');
     }
 });
@@ -559,37 +552,49 @@ app.post('/admin/products', requireAdmin, upload.single('image'), async (req, re
 app.post('/admin/products/:id', requireAdmin, upload.single('image'), async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, price, category_id } = req.body;
+        const { name, description, price, category_id, isActive } = req.body;
         const product = await Product.findByPk(id);
-
         if (!product) {
             return res.status(404).send('Товар не найден');
         }
-
         let imageUrl = product.image;
         if (req.file) {
             const result = await uploadToCloudinary(req.file);
             imageUrl = result.secure_url;
         }
-
         await product.update({
             name,
             description,
             price,
             CategoryId: category_id,
-            image: imageUrl
+            image: imageUrl,
+            isActive: isActive !== undefined ? isActive === 'true' : true
         });
-
         res.redirect('/admin/products');
     } catch (error) {
-        console.error('Ошибка при обновлении товара:', error);
         res.status(500).send('Ошибка сервера');
+    }
+});
+
+app.post('/admin/products/:id/toggle-active', requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+        const product = await Product.findByPk(id);
+        if (!product) return res.status(404).json({ success: false, error: 'Товар не найден' });
+        product.isActive = isActive;
+        await product.save();
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Ошибка сервера' });
     }
 });
 
 app.post('/admin/products/:id/delete', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
+        await Favorite.destroy({ where: { ProductId: id } });
+        await Cart.destroy({ where: { ProductId: id } });
         await Product.destroy({ where: { id } });
         res.json({ success: true });
     } catch (error) {
@@ -678,32 +683,33 @@ app.get('/admin/products/:id/edit', requireAdmin, async (req, res) => {
 
 app.post('/api/orders/create', requireAuth, async (req, res) => {
     try {
-        // Получаем пользователя
         const user = await User.findByPk(req.session.user.id);
-
-        // Получаем все товары из корзины пользователя
+        let selectedIds = req.body.selectedItems;
+        if (!selectedIds) {
+            return res.status(400).send('Не выбрано ни одного товара для заказа');
+        }
+        if (!Array.isArray(selectedIds)) selectedIds = [selectedIds];
+        // Получаем только выбранные позиции корзины пользователя
         const cartItems = await Cart.findAll({
-            where: { UserId: user.id },
+            where: {
+                id: selectedIds,
+                UserId: user.id
+            },
             include: [Product]
         });
-
-        if (!cartItems.length) {
-            return res.status(400).send('Корзина пуста');
+        // Оставляем только активные товары
+        const activeItems = cartItems.filter(item => item.Product && item.Product.isActive);
+        if (!activeItems.length) {
+            return res.status(400).send('Нет доступных товаров для заказа');
         }
-
-        // Считаем итоговую сумму
-        const totalPrice = cartItems.reduce((sum, item) => sum + item.quantity * parseFloat(item.Product.price), 0);
-
-        // Создаём заказ
+        const totalPrice = activeItems.reduce((sum, item) => sum + item.quantity * parseFloat(item.Product.price), 0);
         const order = await Order.create({
             UserId: user.id,
             total_price: totalPrice,
             status: 'new',
             phone: req.body.phone
         });
-
-        // Добавляем товары в заказ
-        for (const item of cartItems) {
+        for (const item of activeItems) {
             await OrderItem.create({
                 OrderId: order.id,
                 ProductId: item.Product.id,
@@ -711,13 +717,10 @@ app.post('/api/orders/create', requireAuth, async (req, res) => {
                 price: item.Product.price
             });
         }
-
-        // Очищаем корзину
-        await Cart.destroy({ where: { UserId: user.id } });
-
+        // Удаляем из корзины только оформленные (активные и выбранные)
+        await Cart.destroy({ where: { id: activeItems.map(i => i.id), UserId: user.id } });
         res.redirect('/profile/orders');
     } catch (error) {
-        console.error('Ошибка при оформлении заказа:', error);
         res.status(500).send('Ошибка сервера');
     }
 });

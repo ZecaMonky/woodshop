@@ -71,6 +71,10 @@ const Product = sequelize.define('Product', {
     },
     image: {
         type: DataTypes.STRING
+    },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
     }
 }, {
     timestamps: true,

@@ -39,13 +39,16 @@
                                 <img src="<%= item.Product.image && item.Product.image.startsWith('http') ? item.Product.image : '/uploads/' + item.Product.image %>" alt="<%= item.Product.name %>" class="w-full h-48 object-cover rounded-lg mb-4">
                                 <h3 class="font-semibold text-gray-900 mb-2"><%= item.Product.name %></h3>
                                 <p class="text-gray-500 text-sm mb-3"><%= item.Product.description %></p>
+                                <% if (!item.Product.isActive) { %>
+                                    <div class="text-red-500 font-bold mb-2">Нет в наличии</div>
+                                <% } %>
                                 <div class="flex items-center justify-between">
                                     <div class="text-xl font-bold text-gray-900"><%= item.Product.price %> руб.</div>
-                                    <button class="toggle-favorite text-red-500 hover:text-red-700" data-product-id="<%= item.Product.id %>">
+                                    <button class="toggle-favorite text-red-500 hover:text-red-700" data-product-id="<%= item.Product.id %>" <%= !item.Product.isActive ? 'disabled opacity-50 cursor-not-allowed' : '' %>>
                                         <i class="fa-solid fa-heart"></i>
                                     </button>
                                 </div>
-                                <button class="add-to-cart w-full mt-4 py-2 border-2 border-gray-900 rounded-full text-gray-900 font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition" data-product-id="<%= item.Product.id %>">
+                                <button class="add-to-cart w-full mt-4 py-2 border-2 border-gray-900 rounded-full text-gray-900 font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition <%= !item.Product.isActive ? 'opacity-50 cursor-not-allowed' : '' %>" data-product-id="<%= item.Product.id %>" <%= !item.Product.isActive ? 'disabled' : '' %>>
                                     <i class="fa-solid fa-cart-plus"></i> В корзину
                                 </button>
                             </div>

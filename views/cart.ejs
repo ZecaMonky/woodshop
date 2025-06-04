@@ -3,72 +3,80 @@
 <div class="max-w-7xl mx-auto py-10 px-4">
     <h1 class="text-3xl font-bold text-gray-900 mb-8">Корзина</h1>
     
+    <% const activeItems = cart.items.filter(item => item.product.isActive); %>
+    <% const inactiveItems = cart.items.filter(item => !item.product.isActive); %>
+
     <% if (cart && cart.items && cart.items.length > 0) { %>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-2xl shadow-lg p-6">
-                    <% cart.items.forEach(item => { %>
-                        <div class="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0">
-                            <img src="<%= item.product.image && item.product.image.startsWith('http') ? item.product.image : '/uploads/' + item.product.image %>" alt="<%= item.product.name %>" class="w-24 h-24 object-cover rounded-lg">
-                            <div class="flex-1">
-                                <h3 class="font-semibold text-gray-900"><%= item.product.name %></h3>
-                                <p class="text-gray-500 text-sm"><%= item.product.description %></p>
-                                <div class="flex items-center gap-4 mt-2">
-                                    <div class="flex items-center border border-gray-200 rounded-lg">
-                                        <button class="px-3 py-1 text-gray-600 hover:bg-gray-100" onclick="updateQuantity(<%= item.id %>, -1)">-</button>
-                                        <input type="number" value="<%= item.quantity %>" min="1" class="w-12 text-center border-x border-gray-200 py-1" readonly>
-                                        <button class="px-3 py-1 text-gray-600 hover:bg-gray-100" onclick="updateQuantity(<%= item.id %>, 1)">+</button>
+                <form id="orderForm" action="/api/orders/create" method="POST">
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <% if (activeItems.length > 0) { %>
+                            <% activeItems.forEach(item => { %>
+                                <div class="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0">
+                                    <input type="checkbox" name="selectedItems" value="<%= item.id %>" class="mr-2 selected-cart-item" checked>
+                                    <img src="<%= item.product.image && item.product.image.startsWith('http') ? item.product.image : '/uploads/' + item.product.image %>" alt="<%= item.product.name %>" class="w-24 h-24 object-cover rounded-lg">
+                                    <div class="flex-1">
+                                        <h3 class="font-semibold text-gray-900"><%= item.product.name %></h3>
+                                        <p class="text-gray-500 text-sm"><%= item.product.description %></p>
+                                        <div class="flex items-center gap-4 mt-2">
+                                            <div class="flex items-center border border-gray-200 rounded-lg">
+                                                <button class="px-3 py-1 text-gray-600 hover:bg-gray-100" onclick="updateQuantity(<%= item.id %>, -1)">-</button>
+                                                <input type="number" value="<%= item.quantity %>" min="1" class="w-12 text-center border-x border-gray-200 py-1" readonly>
+                                                <button class="px-3 py-1 text-gray-600 hover:bg-gray-100" onclick="updateQuantity(<%= item.id %>, 1)">+</button>
+                                            </div>
+                                            <button class="text-red-500 hover:text-red-700" onclick="removeItem(<%= item.id %>)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <button class="text-red-500 hover:text-red-700" onclick="removeItem(<%= item.id %>)">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
+                                    <div class="text-right">
+                                        <div class="font-bold text-gray-900"><%= item.product.price * item.quantity %> руб.</div>
+                                        <div class="text-sm text-gray-500"><%= item.product.price %> руб./шт.</div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="text-center text-gray-400 py-8">Нет доступных товаров для заказа</div>
+                        <% } %>
+                    </div>
+                    <button type="submit" id="orderSubmitBtn" class="w-full bg-gray-900 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition mt-4">
+                        Оформить заказ
+                    </button>
+                </form>
+                <% if (inactiveItems.length > 0) { %>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 mt-8">
+                        <h2 class="text-lg font-bold text-gray-900 mb-4">Недоступно для заказа</h2>
+                        <% inactiveItems.forEach(item => { %>
+                            <div class="flex items-center gap-4 py-4 border-b border-gray-100 last:border-0 opacity-60">
+                                <img src="<%= item.product.image && item.product.image.startsWith('http') ? item.product.image : '/uploads/' + item.product.image %>" alt="<%= item.product.name %>" class="w-24 h-24 object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-gray-900"><%= item.product.name %></h3>
+                                    <p class="text-gray-500 text-sm"><%= item.product.description %></p>
+                                    <div class="text-red-500 font-bold mb-2">Нет в наличии</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-gray-900"><%= item.product.price * item.quantity %> руб.</div>
+                                    <div class="text-sm text-gray-500"><%= item.product.price %> руб./шт.</div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <div class="font-bold text-gray-900"><%= item.product.price * item.quantity %> руб.</div>
-                                <div class="text-sm text-gray-500"><%= item.product.price %> руб./шт.</div>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
+                        <% }); %>
+                    </div>
+                <% } %>
             </div>
             
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-4">
                     <h2 class="text-xl font-bold text-gray-900 mb-4">Итого</h2>
-                    <div class="space-y-2 mb-4">
-                        <div class="flex justify-between text-gray-600">
-                            <span>Товары (<%= cart.items.reduce((sum, item) => sum + item.quantity, 0) %>)</span>
-                            <span><%= cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0) %> руб.</span>
-                        </div>
-                        <div class="flex justify-between text-gray-600">
-                            <span>Доставка</span>
-                            <span>Бесплатно</span>
-                        </div>
+                    <div class="space-y-2 mb-4" id="cartSummary">
+                        <!-- Сюда будет выводиться итог по выбранным -->
                     </div>
                     <div class="border-t border-gray-200 pt-4 mb-6">
                         <div class="flex justify-between text-lg font-bold">
                             <span>Итого к оплате</span>
-                            <span><%= cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0) %> руб.</span>
+                            <span id="cartTotal">0 руб.</span>
                         </div>
                     </div>
-                    <form action="/api/orders/create" method="POST" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
-                            <input type="text" name="name" value="<%= user.name %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" name="email" value="<%= user.email %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
-                            <input type="tel" name="phone" value="<%= user.phone %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <button type="submit" class="w-full bg-gray-900 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition">
-                            Оформить заказ
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -119,6 +127,27 @@ function removeItem(itemId) {
         .catch(error => console.error('Ошибка:', error));
     }
 }
+
+// Динамический пересчет итоговой суммы по выбранным товарам
+function recalcCartSummary() {
+    const checkboxes = document.querySelectorAll('.selected-cart-item:checked');
+    let total = 0;
+    let count = 0;
+    checkboxes.forEach(cb => {
+        const row = cb.closest('.flex.items-center');
+        if (!row) return;
+        const price = parseFloat(row.querySelector('.font-bold.text-gray-900').textContent.replace(/[^\d]/g, ''));
+        const qty = parseInt(row.querySelector('input[type=number]').value);
+        total += price;
+        count += qty;
+    });
+    document.getElementById('cartTotal').textContent = total + ' руб.';
+    document.getElementById('orderSubmitBtn').disabled = checkboxes.length === 0;
+}
+document.querySelectorAll('.selected-cart-item').forEach(cb => {
+    cb.addEventListener('change', recalcCartSummary);
+});
+recalcCartSummary();
 </script>
 
 <%- include('partials/footer') %> 

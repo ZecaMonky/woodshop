@@ -66,6 +66,14 @@
                 </div>
 
                 <div class="col-span-2">
+                    <label for="isActive" class="block text-sm font-medium text-gray-700">Статус товара</label>
+                    <select name="isActive" id="isActive" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="true" <%= !product || product.isActive ? 'selected' : '' %>>В наличии</option>
+                        <option value="false" <%= product && !product.isActive ? 'selected' : '' %>>Нет в наличии</option>
+                    </select>
+                </div>
+
+                <div class="col-span-2">
                     <label for="image" class="block text-sm font-medium text-gray-700">
                         <%= product ? 'Новое изображение (оставьте пустым, чтобы сохранить текущее)' : 'Изображение' %>
                     </label>
