@@ -10,23 +10,23 @@
         <table class="min-w-full text-sm">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-2 md:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th class="px-2 md:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Отправитель</th>
-                    <th class="px-2 md:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Email</th>
-                    <th class="px-2 md:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Телефон</th>
-                    <th class="px-2 md:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Статус</th>
-                    <th class="px-2 md:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Дата</th>
-                    <th class="px-2 md:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Действия</th>
+                    <th class="px-2 lg:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th class="px-2 lg:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Отправитель</th>
+                    <th class="px-2 lg:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Email</th>
+                    <th class="px-2 lg:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Телефон</th>
+                    <th class="px-2 lg:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Статус</th>
+                    <th class="px-2 lg:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Дата</th>
+                    <th class="px-2 lg:px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Действия</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 <% messages.forEach(message => { %>
                     <tr>
-                        <td class="px-2 md:px-4 py-3 whitespace-nowrap font-medium text-gray-900 break-all min-w-0"><%= message.id %></td>
-                        <td class="px-2 md:px-4 py-3 whitespace-nowrap text-gray-900 break-words min-w-0 max-w-[120px] md:max-w-none"><%= message.name %></td>
-                        <td class="px-2 md:px-4 py-3 whitespace-nowrap text-gray-500 break-all min-w-0 hidden md:table-cell"><%= message.email %></td>
-                        <td class="px-2 md:px-4 py-3 whitespace-nowrap text-gray-500 break-all min-w-0 hidden md:table-cell"><%= message.phone || '-' %></td>
-                        <td class="px-2 md:px-4 py-3 whitespace-nowrap">
+                        <td class="px-2 lg:px-4 py-3 whitespace-nowrap font-medium text-gray-900 break-all min-w-0"><%= message.id %></td>
+                        <td class="px-2 lg:px-4 py-3 whitespace-nowrap text-gray-900 break-words min-w-0 max-w-[120px] lg:max-w-none"><%= message.name %></td>
+                        <td class="px-2 lg:px-4 py-3 whitespace-nowrap text-gray-500 break-all min-w-0 hidden lg:table-cell"><%= message.email %></td>
+                        <td class="px-2 lg:px-4 py-3 whitespace-nowrap text-gray-500 break-all min-w-0 hidden lg:table-cell"><%= message.phone || '-' %></td>
+                        <td class="px-2 lg:px-4 py-3 whitespace-nowrap">
                             <select class="status-select rounded-full px-2 py-1 font-medium text-sm
                                 <%= message.status === 'new' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' %>"
                                 data-message-id="<%= message.id %>">
@@ -34,8 +34,8 @@
                                 <option value="processed" <%= message.status === 'processed' ? 'selected' : '' %>>Обработано</option>
                             </select>
                         </td>
-                        <td class="px-2 md:px-4 py-3 whitespace-nowrap text-gray-500 hidden md:table-cell"><%= new Date(message.created_at).toLocaleDateString() %></td>
-                        <td class="px-2 md:px-4 py-3 whitespace-nowrap font-medium">
+                        <td class="px-2 lg:px-4 py-3 whitespace-nowrap text-gray-500 hidden lg:table-cell"><%= new Date(message.created_at).toLocaleDateString() %></td>
+                        <td class="px-2 lg:px-4 py-3 whitespace-nowrap font-medium">
                             <a href="/admin/messages/<%= message.id %>" class="text-blue-600 hover:text-blue-900">Подробнее</a>
                         </td>
                     </tr>
