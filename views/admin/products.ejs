@@ -40,10 +40,10 @@
                             <a href="/admin/products/<%= product.id %>/edit" class="text-blue-600 hover:text-blue-900 mr-4">
                                 Редактировать
                             </a>
-                            <button onclick="toggleProductActive(<%= product.id %>, <%= product.isActive %>)" class="mr-4 <%= product.isActive ? 'text-green-600 hover:text-green-900' : 'text-gray-400' %>">
+                            <button class="toggle-active-btn mr-4 <%= product.isActive ? 'text-green-600 hover:text-green-900' : 'text-gray-400' %>" data-id="<%= product.id %>" data-active="<%= product.isActive ? 'true' : 'false' %>">
                                 <%= product.isActive ? 'В наличии' : 'Нет в наличии' %>
                             </button>
-                            <button onclick="showDeleteProductModal(<%= product.id %>, '<%= product.name.replace(/'/g, '\\'') %>')" class="text-red-600 hover:text-red-900">
+                            <button class="delete-product-btn text-red-600 hover:text-red-900" data-id="<%= product.id %>" data-name="<%- product.name.replace(/'/g, '&#39;') %>">
                                 Удалить
                             </button>
                         </td>
@@ -112,6 +112,19 @@ document.getElementById('confirmDeleteProductBtn').onclick = async function() {
     }
     hideDeleteProductModal();
 };
+
+document.querySelectorAll('.toggle-active-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const current = this.dataset.active === 'true';
+        toggleProductActive(id, current);
+    });
+});
+document.querySelectorAll('.delete-product-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        showDeleteProductModal(this.dataset.id, this.dataset.name);
+    });
+});
 </script>
 
 <%- include('../partials/footer') %> 
