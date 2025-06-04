@@ -313,13 +313,13 @@ app.post('/api/cart/update', requireAuth, async (req, res) => {
 app.post('/api/cart/remove', requireAuth, async (req, res) => {
     try {
         const { itemId } = req.body;
-        if (!itemId || isNaN(itemId)) {
-            console.error('Ошибка: некорректный itemId при удалении из корзины', req.body);
+        if (!itemId) {
+            console.error('Ошибка: отсутствует itemId при удалении из корзины', req.body);
             return res.status(400).json({ success: false, error: 'Некорректный id' });
         }
         await Cart.destroy({
             where: {
-                id: parseInt(itemId),
+                id: itemId,
                 UserId: req.session.user.id
             }
         });
