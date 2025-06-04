@@ -9,46 +9,66 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Тип древесины</label>
                     <select name="woodType" id="woodType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <% categories.forEach(category => { %>
-                            <option value="<%= category.slug %>"><%= category.name %></option>
-                        <% }); %>
+                        <option value="сосна">Сосна</option>
+                        <option value="ель">Ель</option>
+                        <option value="дуб">Дуб</option>
+                        <option value="лиственница">Лиственница</option>
+                        <option value="бук">Бук</option>
                     </select>
                 </div>
-                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Сорт древесины</label>
+                    <select name="grade" id="grade" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="I">I сорт</option>
+                        <option value="II">II сорт</option>
+                        <option value="III">III сорт</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Влажность</label>
+                    <select name="moisture" id="moisture" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="естественная">Естественная</option>
+                        <option value="камерная">Камерная сушка</option>
+                        <option value="сухая">Сухая</option>
+                    </select>
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Размеры (м)</label>
                     <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <input type="number" name="length" placeholder="Длина" min="0.1" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <input type="number" name="width" placeholder="Ширина" min="0.1" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <input type="number" name="height" placeholder="Высота" min="0.1" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
+                        <input type="number" name="length" placeholder="Длина" min="0.01" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="number" name="width" placeholder="Ширина" min="0.01" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="number" name="height" placeholder="Высота" min="0.01" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Количество (шт.)</label>
                     <input type="number" name="quantity" min="1" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Дополнительные опции</label>
                     <div class="space-y-2">
                         <label class="flex items-center gap-2">
-                            <input type="checkbox" name="polishing" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <span>Шлифовка</span>
+                            <input type="checkbox" name="shlifovka" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span>Шлифовка (+500 руб./м³)</span>
                         </label>
                         <label class="flex items-center gap-2">
-                            <input type="checkbox" name="treatment" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <span>Антисептическая обработка</span>
+                            <input type="checkbox" name="antiseptik" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span>Антисептическая обработка (+700 руб./м³)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="ognebio" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span>Пропитка огнебиозащитой (+600 руб./м³)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="strogka" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span>Строгание (+400 руб./м³)</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="frezerovka" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span>Фрезеровка (+800 руб./м³)</span>
                         </label>
                     </div>
                 </div>
-                
                 <button type="submit" class="w-full bg-gray-900 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition">
                     Рассчитать стоимость
                 </button>
@@ -56,10 +76,10 @@
         </div>
         
         <div class="bg-white rounded-2xl shadow-lg p-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Результат расчета</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Результат расчёта</h2>
             <div id="calculationResult" class="space-y-4">
                 <div class="text-center py-12 text-gray-500">
-                    Введите параметры для расчета
+                    Введите параметры для расчёта
                 </div>
             </div>
         </div>
@@ -67,83 +87,84 @@
 </div>
 
 <script>
-const woodTypeSelect = document.getElementById('woodType');
-const woodPrices = {};
-<% categories.forEach(category => { %>
-woodPrices['<%= category.slug %>'] = 1000; // Можно заменить на category.price, если нужно
-<% }); %>
-
-const additionalCosts = {
-    polishing: 200,
-    treatment: 300
+const woodPrices = {
+    'сосна': 10000,
+    'ель': 11500,
+    'дуб': 35000,
+    'лиственница': 25000,
+    'бук': 30000
+};
+const gradeMultipliers = {
+    'I': 1.15,
+    'II': 1,
+    'III': 0.9
+};
+const moistureMultipliers = {
+    'естественная': 1,
+    'камерная': 1.2,
+    'сухая': 1.3
+};
+const optionsPrices = {
+    'shlifovka': 500,
+    'antiseptik': 700,
+    'strogka': 400,
+    'ognebio': 600,
+    'frezerovka': 800
 };
 
 document.getElementById('calculatorForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    
     const formData = new FormData(e.target);
     const woodType = formData.get('woodType');
+    const grade = formData.get('grade');
+    const moisture = formData.get('moisture');
     const length = parseFloat(formData.get('length')) || 0;
     const width = parseFloat(formData.get('width')) || 0;
     const height = parseFloat(formData.get('height')) || 0;
     const quantity = parseInt(formData.get('quantity')) || 1;
-    const polishing = formData.get('polishing') === 'on';
-    const treatment = formData.get('treatment') === 'on';
-    
-    // Расчет объема в кубометрах
-    const volume = length * width * height;
-    
-    // Базовая стоимость
-    let totalCost = volume * woodPrices[woodType];
-    
-    // Дополнительные услуги
-    if (polishing) totalCost += volume * additionalCosts.polishing;
-    if (treatment) totalCost += volume * additionalCosts.treatment;
-    
-    // Умножаем на количество
-    totalCost *= quantity;
-    
-    // Форматируем результат
-    const result = `
-        <div class="space-y-4">
-            <div class="flex justify-between text-gray-600">
-                <span>Объем:</span>
-                <span>${volume.toFixed(2)} м³</span>
-            </div>
-            <div class="flex justify-between text-gray-600">
-                <span>Базовая стоимость:</span>
-                <span>${(volume * woodPrices[woodType]).toFixed(2)} руб.</span>
-            </div>
-            ${polishing ? `
-            <div class="flex justify-between text-gray-600">
-                <span>Шлифовка:</span>
-                <span>${(volume * additionalCosts.polishing).toFixed(2)} руб.</span>
-            </div>
-            ` : ''}
-            ${treatment ? `
-            <div class="flex justify-between text-gray-600">
-                <span>Антисептическая обработка:</span>
-                <span>${(volume * additionalCosts.treatment).toFixed(2)} руб.</span>
-            </div>
-            ` : ''}
-            <div class="border-t border-gray-200 pt-4">
-                <div class="flex justify-between text-lg font-bold">
-                    <span>Итого:</span>
-                    <span>${totalCost.toFixed(2)} руб.</span>
-                </div>
-            </div>
-            <button class="w-full mt-4 bg-gray-900 text-white py-3 rounded-full font-semibold hover:bg-gray-800 transition" onclick="addToCart()">
-                Добавить в корзину
-            </button>
-        </div>
-    `;
-    
+    const volume = length * width * height * quantity;
+
+    // базовая цена за м³
+    let basePrice = woodPrices[woodType] || 0;
+    let pricePerM3 = basePrice * gradeMultipliers[grade] * moistureMultipliers[moisture];
+    let total = pricePerM3 * volume;
+    let options = [];
+    let optionsSum = 0;
+    for (const key in optionsPrices) {
+        if (formData.get(key) === 'on') {
+            options.push(key);
+            optionsSum += optionsPrices[key] * volume;
+        }
+    }
+    total += optionsSum;
+
+    // скидка за объём
+    let discount = 0;
+    if (volume > 3) {
+        discount = 0.05 * total;
+        total -= discount;
+    }
+
+    // Формируем вывод
+    let result = `<div class="flex justify-between text-gray-600"><span>Общий объём:</span><span>${volume.toFixed(3)} м³</span></div>`;
+    result += `<div class="flex justify-between text-gray-600"><span>Цена за м³:</span><span>${pricePerM3.toLocaleString()} руб.</span></div>`;
+    if (options.length > 0) {
+        result += `<div class="flex justify-between text-gray-600"><span>Доп. опции:</span><span>${options.map(opt => {
+            switch(opt) {
+                case 'shlifovka': return 'Шлифовка';
+                case 'antiseptik': return 'Антисептик';
+                case 'ognebio': return 'Огнебиозащита';
+                case 'strogka': return 'Строгание';
+                case 'frezerovka': return 'Фрезеровка';
+            }
+        }).join(', ')}</span></div>`;
+    }
+    if (discount > 0) {
+        result += `<div class="flex justify-between text-green-700 font-semibold"><span>Скидка за объём:</span><span>- ${discount.toLocaleString()} руб.</span></div>`;
+    }
+    result += `<div class="border-t border-gray-200 pt-4 flex justify-between text-lg font-bold"><span>Итого:</span><span>${total.toLocaleString()} руб.</span></div>`;
     document.getElementById('calculationResult').innerHTML = result;
 });
-
-function addToCart() {
-    showToast('Функция добавления в корзину будет доступна в ближайшее время', 'info');
-}
 </script>
 
 <%- include('partials/footer') %> 
