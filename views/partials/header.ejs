@@ -15,7 +15,8 @@
                 <img src="/images/ico.png" alt="WoodShop" class="h-7 w-7">
                 <span class="font-bold text-2xl tracking-tight">WoodShop</span>
             </a>
-            <nav class="flex gap-6">
+            <!-- Desktop nav -->
+            <nav class="hidden lg:flex gap-6">
                 <a href="/" class="text-gray-800 hover:text-blue-600 transition">Главная</a>
                 <a href="/catalog" class="text-gray-800 hover:text-blue-600 transition">Каталог</a>
                 <a href="/calculator" class="text-gray-800 hover:text-blue-600 transition">Калькулятор</a>
@@ -27,7 +28,7 @@
                     <a href="/admin" class="text-red-600 hover:text-red-800 font-semibold transition">Админ-панель</a>
                 <% } %>
             </nav>
-            <div class="flex gap-4 items-center">
+            <div class="hidden lg:flex gap-4 items-center">
                 <% if (!locals.user) { %>
                     <a href="/login" title="Войти" class="text-gray-700 hover:text-blue-600"><i class="fa-regular fa-user text-xl"></i></a>
                 <% } else { %>
@@ -35,7 +36,55 @@
                 <% } %>
                 <a href="/cart" title="Корзина" class="text-gray-700 hover:text-blue-600"><i class="fa-solid fa-cart-shopping text-xl"></i></a>
             </div>
+            <!-- Burger for mobile -->
+            <button id="burgerBtn" class="lg:hidden flex items-center justify-center w-10 h-10 text-gray-700 hover:text-blue-600 focus:outline-none">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
         </div>
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="fixed inset-0 bg-black/40 z-50 hidden">
+            <div class="absolute top-0 left-0 w-64 h-full bg-white shadow-lg flex flex-col p-6 animate-slide-in">
+                <div class="flex items-center justify-between mb-6">
+                    <a href="/" class="flex items-center gap-2">
+                        <img src="/images/ico.png" alt="WoodShop" class="h-7 w-7">
+                        <span class="font-bold text-2xl tracking-tight">WoodShop</span>
+                    </a>
+                    <button id="closeMobileMenu" class="text-gray-700 hover:text-red-600 text-2xl focus:outline-none"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <nav class="flex flex-col gap-4 mb-6">
+                    <a href="/" class="text-gray-800 hover:text-blue-600 transition">Главная</a>
+                    <a href="/catalog" class="text-gray-800 hover:text-blue-600 transition">Каталог</a>
+                    <a href="/calculator" class="text-gray-800 hover:text-blue-600 transition">Калькулятор</a>
+                    <a href="/contacts" class="text-gray-800 hover:text-blue-600 transition">Контакты</a>
+                    <% if (locals.user) { %>
+                        <a href="/profile" class="text-gray-800 hover:text-blue-600 transition">Личный кабинет</a>
+                    <% } %>
+                    <% if (locals.user && locals.user.isAdmin) { %>
+                        <a href="/admin" class="text-red-600 hover:text-red-800 font-semibold transition">Админ-панель</a>
+                    <% } %>
+                </nav>
+                <div class="flex gap-4 items-center mb-6">
+                    <% if (!locals.user) { %>
+                        <a href="/login" title="Войти" class="text-gray-700 hover:text-blue-600"><i class="fa-regular fa-user text-xl"></i></a>
+                    <% } else { %>
+                        <a href="/logout" class="px-4 py-2 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition">Выйти</a>
+                    <% } %>
+                    <a href="/cart" title="Корзина" class="text-gray-700 hover:text-blue-600"><i class="fa-solid fa-cart-shopping text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+        <style>
+        @keyframes slide-in { from { transform: translateX(-100%); } to { transform: none; } }
+        .animate-slide-in { animation: slide-in 0.2s cubic-bezier(.4,0,.2,1) both; }
+        </style>
+        <script>
+        const burgerBtn = document.getElementById('burgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        burgerBtn && burgerBtn.addEventListener('click', () => mobileMenu.classList.remove('hidden'));
+        closeMobileMenu && closeMobileMenu.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        mobileMenu && mobileMenu.addEventListener('click', e => { if (e.target === mobileMenu) mobileMenu.classList.add('hidden'); });
+        </script>
     </header>
 
     <!-- Toast уведомление -->
