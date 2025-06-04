@@ -105,7 +105,7 @@ function removeItem(itemId) {
         fetch('/api/cart/remove', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId })
+            body: JSON.stringify({ itemId: parseInt(itemId) })
         })
         .then(response => response.json())
         .then(data => {
