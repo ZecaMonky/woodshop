@@ -67,17 +67,20 @@ ContactMessage: id, name, email, phone, message, status, created_at
 ER-диаграмма (текстовая)
 ------------------------
 
-User ─────┬─────────────┐
-          │             │
-        Order         Favorite
-          │             │
-        OrderItem      Product
-          │             │
-        Product      Category
-          │
-        Cart
-          │
-        Product
++---------+        +-----------+        +-----------+
+|  User   |<------>|  Order    |<------>| OrderItem |
++---------+        +-----------+        +-----------+
+     |                  ^                    ^
+     |                  |                    |
+     v                  |                    |
++---------+        +-----------+        +-----------+
+| Favorite|<------>|  Product  |<------>|   Cart    |
++---------+        +-----------+        +-----------+
+                        |
+                        v
+                  +-----------+
+                  | Category  |
+                  +-----------+
 
 - User 1:M Order
 - User 1:M Favorite (через Product)
