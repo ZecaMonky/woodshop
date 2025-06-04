@@ -19,7 +19,7 @@
                                         <input type="number" value="<%= item.quantity %>" min="1" class="w-12 text-center border-x border-gray-200 py-1" readonly>
                                         <button class="px-3 py-1 text-gray-600 hover:bg-gray-100" onclick="updateQuantity(<%= item.id %>, 1)">+</button>
                                     </div>
-                                    <button class="text-red-500 hover:text-red-700" onclick="removeItem(<%= item.id %>)">
+                                    <button class="text-red-500 hover:text-red-700" onclick="removeItem('<%= item.id %>')">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
